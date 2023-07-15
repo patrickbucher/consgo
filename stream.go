@@ -10,17 +10,16 @@ type Stream[T any] struct {
 
 func New[T any](left T, next Func[T]) *Stream[T] {
 	right := func() *Stream[T] { return New(next(left), next) }
-	// TODO: memoize right
 	return &Stream[T]{
 		left:  left,
-		right: right,
+		right: memoize(right),
 	}
 }
 
 func ConsStream[T any](left T, right Delayed[T]) *Stream[T] {
 	return &Stream[T]{
 		left:  left,
-		right: right,
+		right: memoize(right),
 	}
 }
 
@@ -46,4 +45,16 @@ func StreamTake[T any](s *Stream[T], n int) []T {
 		s = StreamCdr(s)
 	}
 	return values
+}
+
+func memoize[T any](f Delayed[T]) Delayed[T] {
+	run := false
+	var result *Stream[T]
+	return func() *Stream[T] {
+		if !run {
+			result = f()
+			run = true
+		}
+		return result
+	}
 }
