@@ -1,23 +1,23 @@
 package consgo
 
 type Cell[T any] struct {
-	Left  T
-	Right *Cell[T]
+	left  T
+	right *Cell[T]
 }
 
 func Cons[T any](left T, right *Cell[T]) *Cell[T] {
 	return &Cell[T]{
-		Left:  left,
-		Right: right,
+		left:  left,
+		right: right,
 	}
 }
 
 func Car[T any](cell *Cell[T]) T {
-	return cell.Left
+	return cell.left
 }
 
 func Cdr[T any](cell *Cell[T]) *Cell[T] {
-	return cell.Right
+	return cell.right
 }
 
 func Slice[T any](head *Cell[T]) []T {
