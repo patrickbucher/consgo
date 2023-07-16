@@ -1,5 +1,7 @@
 package consgo
 
+type Func[T any] func(left T) T
+
 type Cell[T any] struct {
 	left  T
 	right *Cell[T]
@@ -18,6 +20,28 @@ func Car[T any](cell *Cell[T]) T {
 
 func Cdr[T any](cell *Cell[T]) *Cell[T] {
 	return cell.right
+}
+
+func Ref[T any](cell *Cell[T], n int) T {
+	if n == 0 {
+		return Car(cell)
+	}
+	return Ref(Cdr(cell), n-1)
+}
+
+func Map[T any](cell *Cell[T], f Func[T]) *Cell[T] {
+	if cell == nil {
+		return nil
+	}
+	return Cons(f(Car(cell)), Map(Cdr(cell), f))
+}
+
+func ForEach[T any](cell *Cell[T], f func(x T)) {
+	if cell == nil {
+		return
+	}
+	f(Car(cell))
+	ForEach(Cdr(cell), f)
 }
 
 func Slice[T any](head *Cell[T]) []T {
